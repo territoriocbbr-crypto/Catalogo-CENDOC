@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CENDOC - Facultad de Diseño</title>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #212529;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #002855; /* Azul institucional */
+      color: white;
+      padding: 10px 20px;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .logo-img {
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .title {
+      flex: 1;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .banner {
+      background: linear-gradient(90deg, #002855, #003d99);
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .banner h2 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .banner p {
+      margin: 10px 0 0;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .tabs button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      background: #e8c548; /* Dorado institucional */
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .tabs button.active {
+      background: #002855;
+      color: white;
+    }
+
+    .tabs button:hover {
+      background: #caa92f;
+    }
+
+    .search-container {
+      text-align: center;
+      margin: 20px auto;
+    }
+
+    .search-container h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #002855;
+    }
+
+    #search {
+      padding: 15px;
+      width: 90%;
+      max-width: 600px;
+      border: 2px solid #002855;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 600px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background: #002855;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      vertical-align: top;
+      word-break: break-word;
+    }
+
+    tr:nth-child(even) {
+      background: #f1f1f1;
+    }
+
+    .no-result {
+      text-align: center;
+      font-style: italic;
+      color: #555;
+      margin: 20px 0;
+    }
+
+    @media screen and (max-width: 768px) {
+      header {
+        flex-direction: column;
+      }
+
+      .logos {
+        justify-content: center;
+      }
+
+      .logo-img {
+        height: 50px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+
+      .banner h2 {
+        font-size: 20px;
+      }
+
+      .banner p {
+        font-size: 14px;
+      }
+
+      .tabs button {
+        width: 90%;
+        margin: 8px auto;
+        display: block;
+        font-size: 16px;
+      }
+    }
+
+    footer {
+      background-color: #002855;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logos">
+    <img src="logo_ucatolica.png" alt="Escudo Universidad Católica de Colombia" class="logo-img"/>
+    <img src="sello.png" alt="Sello de calidad" class="logo-img"/>
+    <img src="csofia.png" alt="Certificado Sofía" class="logo-img"/>
+  </div>
+  <div class="title">
+    <h1>CENDOC - Facultad de Diseño</h1>
+  </div>
+</header>
+
+<div class="banner">
+  <h2>Bienvenido al Catálogo Digital</h2>
+  <p>Consulta Libros, Revistas y Otros Recursos disponibles en el CENDOC</p>
+</div>
+
+<div class="tabs">
+  <button class="active" onclick="cargarCatalogo('libros.csv', this)">Libros</button>
+  <button onclick="cargarCatalogo('otros_libros.csv', this)">Otros Libros</button>
+  <button onclick="cargarCatalogo('revistas.csv', this)">Revistas</button>
+</div>
+
+<div class="search-container">
+  <h3>Buscador</h3>
+  <input id="search" type="text" placeholder="Buscar por Título, Autor, Editorial, Año o Número..." oninput="filtrarTabla()" />
+</div>
+
+<div class="table-container">
+  <table id="catalogo">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+  <div id="no-result" class="no-result" style="display: none;">No se encontraron resultados</div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Universidad Católica de Colombia - Centro de Documentación (CENDOC)</p>
+  <p><strong>Horario de atención:</strong><br>
+     Lunes - Miércoles - Viernes: 7:00 am a 4:00 pm<br>
+     Martes y Jueves: 12:00 pm a 7:00 pm
+  </p>
+  <p><strong>Ubicación:</strong><br>
+     Sede Claustro: Diagonal 46 A # 15 B – 10 - Bloque L - Piso 4
+  </p>
+</footer>
+
+<!-- PapaParse CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+  let datosActuales = [];
+  let encabezados = [];
+
+  async function cargarCatalogo(archivo, boton) {
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    boton.classList.add('active');
+
+    try {
+      const res = await fetch(archivo);
+      if (!res.ok) throw new Error('Archivo no encontrado');
+      const texto = await res.text();
+      mostrarTabla(texto);
+      document.getElementById('search').value = '';
+    } catch (e) {
+      alert('Error al cargar el catálogo.');
+      console.error(e);
+    }
+  }
+
+  function mostrarTabla(csvTexto) {
+    const parsed = Papa.parse(csvTexto.trim(), { header: true });
+    encabezados = parsed.meta.fields;
+    datosActuales = parsed.data.filter(row => Object.values(row).some(v => v !== null && v !== ""));
+
+    const thead = document.querySelector('#catalogo thead');
+    const tbody = document.querySelector('#catalogo tbody');
+
+    thead.innerHTML = '<tr>' + encabezados.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+    tbody.innerHTML = datosActuales.map(fila =>
+      '<tr>' + encabezados.map(h => `<td>${fila[h] || ''}</td>`).join('') + '</tr>'
+    ).join('');
+
+    document.getElementById('no-result').style.display = 'none';
+  }
+
+  function filtrarTabla() {
+    const texto = document.getElementById('search').value.toLowerCase().trim();
+    const tbody = document.querySelector('#catalogo tbody');
+
+    const filasFiltradas = datosActuales.filter(fila => {
+      const filaTexto = encabezados.map(h => fila[h] || "").join(" ").toLowerCase();
+      return filaTexto.includes(texto);
+    });
+
+    if (filasFiltradas.length === 0) {
+      tbody.innerHTML = '';
+      document.getElementById('no-result').style.display = 'block';
+    } else {
+      document.getElementById('no-result').style.display = 'none';
+      tbody.innerHTML = filasFiltradas.map(fila =>
+        '<tr>' + encabezados.map(h => `<td>${fila[h] || ''}</td>`).join('') + '</tr>'
+      ).join('');
+    }
+  }
+
+  window.onload = () => {
+    cargarCatalogo('libros.csv', document.querySelector('.tabs button.active'));
+  };
+</script>
+
+</body>
+</html>
