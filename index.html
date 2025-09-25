@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Catálogo Biblioteca</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+  h1 { margin-bottom: 10px; }
+  .tabs button {
+    padding: 10px 15px;
+    margin-right: 5px;
+    border: none;
+    background: #ddd;
+    cursor: pointer;
+  }
+  .tabs button.active {
+    background: #007BFF;
+    color: white;
+  }
+  #search {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background: #f4f4f4;
+  }
+</style>
+</head>
+<body>
+<h1>Catálogo Biblioteca</h1>
+<div class="tabs">
+  <button class="active" onclick="cargarCatalogo('libros.csv', this)">Libros</button>
+  <button onclick="cargarCatalogo('otros_libros.csv', this)">Otros Libros</button>
+  <button onclick="cargarCatalogo('revistas.csv', this)">Revistas</button>
+</div>
+
+<input id="search" type="text" placeholder="Buscar..." oninput="filtrarTabla()" />
+
+<table id="catalogo">
+  <thead></thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  async function cargarCatalogo(filename, btn) {
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    try {
+      const res = await fetch(filename);
+      if (!res.ok) throw new Error('Error en la descarga');
+      const text = await res.text();
+      mostrarTabla(text);
+      document.getElementById('search').value = '';
+    } catch (e) {
+      alert('Error al cargar el catálogo. Intente de nuevo más tarde.');
+      console.error(e);
+    }
+  }
+
+  function mostrarTabla(csv) {
+    const filas = csv.trim().split('\n');
+    const encabezados = filas[0].split(',');
+    const cuerpo = filas.slice(1);
+
+    const thead = document.querySelector('#catalogo thead');
+    const tbody = document.querySelector('#catalogo tbody');
+
+    thead.innerHTML = '<tr>' + encabezados.map(h => `<th>${h}</th>`).join('') + '</tr>';
+    tbody.innerHTML = cuerpo.map(fila => {
+      const celdas = fila.split(',');
+      return '<tr>' + celdas.map(c => `<td>${c}</td>`).join('') + '</tr>';
+    }).join('');
+  }
+
+  function filtrarTabla() {
+    const filtro = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('#catalogo tbody tr').forEach(tr => {
+      const texto = tr.textContent.toLowerCase();
+      tr.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+  }
+
+  cargarCatalogo('libros.csv', document.querySelector('.tabs button.active'));
+</script>
+</body>
+</html>
